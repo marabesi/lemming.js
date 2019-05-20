@@ -1,3 +1,7 @@
+This is a published version of https://github.com/dtao/lemming.js
+==========
+
+
 Lemming.js
 ==========
 

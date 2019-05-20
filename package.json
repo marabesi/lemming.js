@@ -1,0 +1,19 @@
+{
+  "name": "lemming",
+  "version": "1.0.0",
+  "description": "Evaluate user-input JS code (original from dtao/lemming.js)",
+  "main": "lemming.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marabesi/lemming.js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marabesi/lemming.js/issues"
+  },
+  "homepage": "https://github.com/marabesi/lemming.js#readme"
+}
