@@ -1,4 +1,4 @@
-(function() {
+(function () {
 
   /**
    * Creates a `Lemming` object with the specified script. Calling {@link #run} on the resulting
@@ -21,7 +21,9 @@
 
     scripts: [],
 
-    enableXHR: false
+    enableXHR: false,
+
+    context: ''
   };
 
   /**
@@ -30,32 +32,35 @@
    *
    * @param {Object=} options
    */
-  Lemming.prototype.run = function(options) {
+  Lemming.prototype.run = function (options) {
     options = objectWithDefaults(options, Lemming.options);
 
     var lemming = this,
-        worker  = new Worker(options.fileName),
-        handle  = setTimeout(function() {
+      worker = new Worker(options.fileName),
+      handle = setTimeout(function () {
 
-          worker.terminate();
-          lemming.handleTimeout();
-          lemming.handleCompleted();
+        worker.terminate();
+        lemming.handleTimeout();
+        lemming.handleCompleted();
 
-        }, options.timeout);
+      }, options.timeout);
 
-    worker.addEventListener('message', function(e) {
+    worker.addEventListener('message', function (e) {
       clearTimeout(handle);
       lemming.handleResult(e.data);
       lemming.handleCompleted();
+      worker.terminate();
     });
 
-    worker.addEventListener('error', function(e) {
+    worker.addEventListener('error', function (e) {
       clearTimeout(handle);
       lemming.handleError(e.message || e);
       lemming.handleCompleted();
+      worker.terminate();
     });
 
     var message = JSON.stringify({
+      context: options.context,
       source: this.script,
       scripts: options.scripts,
       enableXHR: options.enableXHR
@@ -64,26 +69,26 @@
     worker.postMessage(message);
   };
 
-  Lemming.prototype.onResult = function(callback) {
+  Lemming.prototype.onResult = function (callback) {
     this.handleResult = callback;
   };
 
-  Lemming.prototype.onTimeout = function(callback) {
+  Lemming.prototype.onTimeout = function (callback) {
     this.handleTimeout = callback;
   };
 
-  Lemming.prototype.onError = function(callback) {
+  Lemming.prototype.onError = function (callback) {
     this.handleError = callback;
   };
 
-  Lemming.prototype.onCompleted = function(callback) {
+  Lemming.prototype.onCompleted = function (callback) {
     this.handleCompleted = callback;
   };
 
   Lemming.prototype.handleResult =
-  Lemming.prototype.handleTimeout =
-  Lemming.prototype.handleError =
-  Lemming.prototype.handleCompleted = function() {};
+    Lemming.prototype.handleTimeout =
+    Lemming.prototype.handleError =
+    Lemming.prototype.handleCompleted = function () { };
 
   /**
    * Creates an object with all of the specified properties, falling back to the specified defaults.
@@ -113,7 +118,9 @@
         delete this.XMLHttpRequest;
       }
 
-      var result = eval(data.source);
+      var source = data.context + ' ' + data.source;
+
+      var result = eval(source);
 
       this.postMessage(result);
     };
